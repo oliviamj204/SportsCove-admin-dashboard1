@@ -1,0 +1,43 @@
+/* src/styles.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --background: #074048;   /* Main Dark Teal */
+  --sidebar-bg: #0a505a;   /* Slightly Lighter Teal */
+  --primary: #cfffa5;      /* Main Light Green */
+  --text-primary: #cfffa5; /* Light Green Text */
+  --text-secondary: #a5c585;/* Muted Green Text */
+  --border-color: #1a606a; /* Lighter Teal for borders */
+  --card-bg: #0a505a;      /* Same as sidebar */
+  
+  /* Status colors remain for clear user feedback */
+  --success: #10b981;
+  --success-bg: rgba(16, 185, 129, 0.1);
+  --success-text: #6ee7b7;
+  --warning: #f59e0b;
+  --warning-bg: rgba(245, 158, 11, 0.1);
+  --warning-text: #fcd34d;
+  --danger: #ef4444;
+  --danger-bg: rgba(239, 68, 68, 0.1);
+  --danger-text: #fca5a5;
+  --info: #3b82f6;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--background);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
