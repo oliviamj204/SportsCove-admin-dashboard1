@@ -143,3 +143,82 @@
     text-align: center;
 }
 
+/* Certificate and File Links */
+.certificate-file, .file-link {
+    margin-top: 1rem;
+}
+
+.file-link {
+    display: inline-block;
+    background-color: #3b82f6;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.file-link:hover {
+    background-color: #2563eb;
+}
+
+/* Video Container */
+.video-container {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+/* Achievements Media */
+.achievements-media {
+    margin-top: 1.5rem;
+}
+
+.achievements-media h4 {
+    color: #cfffa5;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+/* Social Links */
+.social-links-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.social-link-item {
+    padding: 0.75rem;
+    background-color: #f9fafb;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+}
+
+.social-link-item strong {
+    color: #374151;
+    display: inline-block;
+    min-width: 100px;
+}
+
+.social-link {
+    color: #3b82f6;
+    text-decoration: none;
+    word-break: break-all;
+    font-weight: 500;
+}
+
+.social-link:hover {
+    text-decoration: underline;
+}
+
+/* Certificate Details */
+.certificate-details {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f9fafb;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+}
+
+

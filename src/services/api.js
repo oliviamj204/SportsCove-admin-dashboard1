@@ -1,157 +1,376 @@
-// This is a mock "database". In a real app, this data would be on a server.
-const coachesDB = [
-    {
-        id: 1,
-        name: "Alex Thompson",
-        email: "alex.thompson@example.com",
-        status: "Pending",
-        joined: "2023-10-26",
-        experience: "8 years",
-        sports: "Basketball",
-        bio: "Experienced basketball coach specializing in youth development and offensive strategies.",
-        rejectionReason: null,
-        // New Detailed Fields
-        country: "USA",
-        city: "Los Angeles",
-        about: "A passionate and energetic basketball coach with a focus on building strong fundamentals and a love for the game in young athletes. My goal is to develop not just skilled players, but also confident individuals.",
-        background: "Played Division I college basketball at UCLA. Spent three years as an assistant coach for a high school varsity team before taking on a head coaching role.",
-        trainingStyle: "High-intensity drills focused on agility, shooting mechanics, and defensive positioning. I believe in a positive reinforcement approach to motivate players.",
-        affiliation: "Other",
-        media: [
-            { type: "image", url: "https://placehold.co/600x400/EEE/31343C?text=Coaching+Certificate" },
-            { type: "image", url: "https://placehold.co/600x400/EEE/31343C?text=First+Aid+Training" },
-        ]
-    },
-    {
-        id: 2,
-        name: "Samantha Ray",
-        email: "samantha.ray@example.com",
-        status: "Approved",
-        joined: "2023-09-15",
-        experience: "12 years",
-        sports: "Soccer",
-        bio: "Former professional soccer player, now a certified coach with a focus on defensive tactics.",
-        rejectionReason: null,
-        // New Detailed Fields
-        country: "Canada",
-        city: "Toronto",
-        about: "With over a decade of experience at the professional level, I bring a deep understanding of soccer strategy and player conditioning. I am dedicated to mentoring the next generation of soccer talent.",
-        background: "Played for the Canadian Women's National Team for 8 years. Transitioned to coaching after retiring, earning a UEFA A License.",
-        trainingStyle: "Emphasis on tactical awareness, team cohesion, and positional play. Sessions are structured to simulate real-game scenarios.",
-        affiliation: "WBC",
-        media: [
-            { type: "image", url: "https://placehold.co/600x400/EEE/31343C?text=UEFA+A+License" },
-        ]
-    },
-    {
-        id: 3,
-        name: "Ben Carter",
-        email: "ben.carter@example.com",
-        status: "Approved",
-        joined: "2023-08-01",
-        experience: "10 years",
-        sports: "Tennis",
-        bio: "A dedicated tennis coach known for improving player serves and groundstrokes.",
-        rejectionReason: null,
-        // New Detailed Fields
-        country: "USA",
-        city: "Miami",
-        about: "My coaching philosophy is centered around personalized development plans for each athlete, focusing on technical skill, mental toughness, and strategic gameplay.",
-        background: "Competed on the ATP Challenger Tour for 5 years. Certified by the Professional Tennis Registry (PTR).",
-        trainingStyle: "A mix of on-court drills, video analysis, and fitness training to build a well-rounded player.",
-        affiliation: "IBF",
-        media: [
-            { type: "image", url: "https://placehold.co/600x400/EEE/31343C?text=PTR+Certification" },
-        ]
-    },
-    {
-        id: 4,
-        name: "Priya Sharma",
-        email: "priya.sharma@example.com",
-        status: "Rejected",
-        joined: "2023-10-20",
-        experience: "5 years",
-        sports: "Boxing",
-        bio: "Aspiring boxing coach for amateurs.",
-        rejectionReason: "Affiliation documents are out of date.",
-        // New Detailed Fields
-        country: "India",
-        city: "Mumbai",
-        about: "Passionate about the art of boxing, I aim to teach discipline, respect, and self-defense through structured training programs.",
-        background: "Amateur boxer with 50+ bouts. Certified state-level coach.",
-        trainingStyle: "Focus on footwork, defensive techniques, and combination punching. Strong emphasis on safety and conditioning.",
-        affiliation: "IABF affiliated state association",
-        media: []
-    },
-    {
-        id: 5,
-        name: "Rajiv Singh",
-        email: "rajiv.singh@example.com",
-        status: "Pending",
-        joined: "2023-10-28",
-        experience: "15 years",
-        sports: "Boxing",
-        bio: "Veteran boxing coach with a history of training national champions.",
-        rejectionReason: null,
-        // New Detailed Fields
-        country: "India",
-        city: "Delhi",
-        about: "A disciplined and old-school coach who believes in rigorous training and unwavering dedication. My track record speaks for itself, having guided several boxers to national-level success.",
-        background: "Former national-level boxer. Head coach at a renowned boxing club in Delhi for over a decade.",
-        trainingStyle: "Grueling conditioning, sparring-intensive sessions, and a focus on building physical and mental endurance.",
-        affiliation: "BFi-affiliated state association",
-        media: [
-            { type: "image", url: "https://placehold.co/600x400/EEE/31343C?text=National+Coach+ID" },
-        ]
-    },
-];
+// API Configuration (production & proxy friendly)
+// If using Vercel rewrites (vercel.json) or CRA dev proxy, you can hit relative paths.
+// Set REACT_APP_USE_VERCEL_PROXY=true in the environment (on Vercel) to force relative requests.
+const USE_VERCEL_PROXY = String(process.env.REACT_APP_USE_VERCEL_PROXY || '').toLowerCase() === 'true';
+const API_BASE_URL = USE_VERCEL_PROXY
+    ? ''
+    : (process.env.REACT_APP_API_BASE_URL || '').replace(/\/$/, '');
+// Fallback token only for local/dev diagnostics (never commit a real token in env)
+const DEFAULT_BEARER_TOKEN = process.env.REACT_APP_FALLBACK_TOKEN || '';
 
-// Simulates a network delay
-const delay = (ms) => new Promise(res => setTimeout(res, ms));
+// Utility: build full URL safely
+const buildUrl = (endpoint) => {
+    if (!endpoint) throw new Error('Endpoint is required');
+    if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) return endpoint; // Absolute path safeguard
+    // When using proxy/rewrites we intentionally do NOT prepend an origin
+    return `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+};
+
+// API Helper Functions
+const apiRequest = async (endpoint, options = {}) => {
+    const token = localStorage.getItem('adminToken') || DEFAULT_BEARER_TOKEN;
+    const url = buildUrl(endpoint);
+
+    const isFormData = options.body instanceof FormData;
+    const headers = {
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        ...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
+        ...options.headers,
+    };
+
+    const finalConfig = {
+        method: options.method || 'GET',
+        ...options,
+        headers,
+    };
+
+    let response;
+    try {
+        response = await fetch(url, finalConfig);
+    } catch (networkErr) {
+        console.error(`[API] Network failure for ${endpoint}:`, networkErr);
+        throw new Error('Network error. Please check your connection.');
+    }
+
+    const contentType = response.headers.get('content-type') || '';
+    let parsed;
+    if (contentType.includes('application/json')) {
+        try {
+            parsed = await response.json();
+        } catch (jsonErr) {
+            console.warn('[API] Failed to parse JSON response', jsonErr);
+            parsed = { success: false, message: 'Invalid JSON response', raw: null };
+        }
+    } else if (response.status === 204) {
+        parsed = { success: true, message: 'No content', result: [] };
+    } else {
+        // Fallback text when non-JSON expected (should not normally happen for this API)
+        const text = await response.text().catch(() => '');
+        parsed = { success: response.ok, message: text || response.statusText, result: [] };
+    }
+
+    if (!response.ok) {
+        const errMsg = parsed?.message || `Request failed (${response.status})`;
+        throw new Error(errMsg);
+    }
+
+    return parsed;
+};
+
+// Mock data removed - now using live API data only
+// All endpoints connect to real database
 
 // --- EXPORTED FUNCTIONS ---
 
 export const fetchDashboardData = async () => {
-    await delay(500);
+    try {
+        // Fetch real coach data from API
+        const coaches = await fetchCoaches();
+        
+        return {
+            totalCoaches: coaches.length,
+            pendingApprovals: coaches.filter(c => c.status && c.status.toLowerCase() === 'pending').length,
+            approvedCoaches: coaches.filter(c => c.status && c.status.toLowerCase() === 'approved').length,
+            rejectedCoaches: coaches.filter(c => c.status && c.status.toLowerCase() === 'rejected').length,
+            totalUsers: coaches.length, // Using coach count as user count for now
+        };
+    } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+        throw error;
+    }
+};
+
+// Data transformer for getAllCoaches (basic coach list)
+const transformCoachListData = (apiCoaches) => {
+    if (!apiCoaches || !Array.isArray(apiCoaches)) {
+        console.log('Invalid apiCoaches data:', apiCoaches);
+        return [];
+    }
+    
+    return apiCoaches.map((coach, index) => {
+        console.log(`Coach ${index}:`, coach);
+        
+        return {
+            id: coach.coachProfileId || coach.coach_profile_id || (index + 1),
+            name: coach.fullName || coach.full_name || `Coach ${index + 1}`,
+            email: coach.email || 'coach@example.com',
+            status: coach.verificationStatus || 'pending',
+            joined: coach.created_at || coach.createdAt || new Date().toISOString().split('T')[0],
+            experience: coach.coachingExperience ? `${coach.coachingExperience} years` : '5 years',
+            sports: coach.sportType || 'General',
+            bio: coach.about || 'Experienced coach',
+            rejectionReason: coach.rejectionReason || null,
+            
+            // Basic fields for list view
+            country: coach.country || 'Not specified',
+            city: coach.city || 'Not specified',
+            about: coach.about || 'No description available',
+            background: coach.background || 'No background information',
+            trainingStyle: coach.trainingStyle || 'Not specified',
+            displayPicture: coach.displayPicture || null,
+            institutionName: coach.institutionName || 'Not specified',
+            universityName: coach.universityName || 'Not specified',
+            profileCompletionStatus: coach.profileCompletionStatus || 'notStarted',
+            verificationStatus: coach.verificationStatus || 'pending',
+            certificateStatus: coach.certificateStatus || false,
+            affiliationStatus: coach.affiliationStatus || false,
+            
+            // Store original data for detailed view fallback
+            _originalData: coach
+        };
+    });
+};
+
+// Data transformer for viewSingleCoachProfileInfo (detailed profile)
+const transformSingleCoachData = (coachData) => {
+    if (!coachData) {
+        console.log('Invalid single coach data:', coachData);
+        return null;
+    }
+    
+    console.log('Single coach raw data:', coachData);
+    
+    // Parse keyAchievements if it's a JSON string
+    let parsedKeyAchievements = null;
+    if (coachData.keyAchievements) {
+        if (typeof coachData.keyAchievements === 'string') {
+            try {
+                parsedKeyAchievements = JSON.parse(coachData.keyAchievements);
+            } catch (e) {
+                parsedKeyAchievements = coachData.keyAchievements; // Keep as string if not valid JSON
+            }
+        } else {
+            parsedKeyAchievements = coachData.keyAchievements;
+        }
+    }
+    
+    // Parse socialMediaLinks if it's a JSON string
+    let parsedSocialLinks = [];
+    if (coachData.socialMediaLinks) {
+        if (typeof coachData.socialMediaLinks === 'string') {
+            try {
+                parsedSocialLinks = JSON.parse(coachData.socialMediaLinks);
+            } catch (e) {
+                parsedSocialLinks = [];
+            }
+        } else if (Array.isArray(coachData.socialMediaLinks)) {
+            parsedSocialLinks = coachData.socialMediaLinks;
+        }
+    }
+    
     return {
-      totalCoaches: coachesDB.length,
-      pendingApprovals: coachesDB.filter(c => c.status === 'Pending').length,
-      approvedCoaches: coachesDB.filter(c => c.status === 'Approved').length,
-      rejectedCoaches: coachesDB.filter(c => c.status === 'Rejected').length,
-      totalUsers: 1428,
+        id: coachData.coachProfileId || coachData.coach_profile_id,
+        name: coachData.fullName || coachData.full_name || 'Unknown Coach',
+        email: coachData.email || 'coach@example.com',
+        status: coachData.verificationStatus || 'pending',
+        joined: coachData.created_at || coachData.createdAt || new Date().toISOString().split('T')[0],
+        experience: coachData.coachingExperience ? `${coachData.coachingExperience} years` : '5 years',
+        sports: coachData.sportType || 'General',
+        bio: coachData.about || 'No description available',
+        rejectionReason: coachData.rejectionReason || null,
+        
+        // Enhanced fields for detailed view
+        country: coachData.country || 'Not specified',
+        city: coachData.city || 'Not specified',
+        about: coachData.about || 'No description available',
+        background: coachData.background || 'No background information',
+        trainingStyle: coachData.trainingStyle || 'Not specified',
+        
+        // Professional details
+        displayPicture: coachData.displayPicture || null,
+        institutionName: coachData.institutionName || 'Not specified',
+        universityName: coachData.universityName || 'Not specified',
+        
+        // Status fields - ALL from API spec
+        profileCompletionStatus: coachData.profileCompletionStatus || 'notStarted',
+        verificationStatus: coachData.verificationStatus || 'pending',
+        certificateStatus: coachData.certificateStatus || false,
+        affiliationStatus: coachData.affiliationStatus || false,
+        scheduleCompletionStatus: coachData.scheduleCompletionStatus || false,
+        profileSubmissionStatus: coachData.profileSubmissionStatus || coachData.profilesubmissionStatus || false,
+        
+        // Media and achievements - ALL from API spec
+        certificate: coachData.certificate || null,
+        demoVideo: coachData.demoVideo || null,
+        keyAchievements: parsedKeyAchievements,
+        socialMediaLinks: parsedSocialLinks,
+        
+        // Keep original data for debugging
+        _originalData: coachData
     };
 };
 
+// 1. GET /v1/admin/getAllCoaches - For coach list view
 export const fetchCoaches = async () => {
-    await delay(700);
-    return [...coachesDB];
+    console.log('Fetching all coaches list...');
+    const response = await apiRequest('/v1/admin/getAllCoaches');
+    console.log('getAllCoaches API Response:', response);
+    
+    // Based on API spec: result[0].coachProfiles
+    if (response.result && Array.isArray(response.result) && response.result[0] && response.result[0].coachProfiles) {
+        const rawCoaches = response.result[0].coachProfiles;
+        console.log('Extracted coach list:', rawCoaches);
+        
+        // Transform using coach list transformer
+        const transformedCoaches = transformCoachListData(rawCoaches);
+        console.log('Transformed coach list:', transformedCoaches);
+        
+        return transformedCoaches;
+    }
+    
+    throw new Error('Invalid response format from getAllCoaches API');
 };
 
+// 2. GET /v1/admin/viewSingleCoachProfileInfo/:id - For detailed coach profile
 export const fetchCoachById = async (coachId) => {
-    await delay(400);
-    const coach = coachesDB.find(c => c.id === coachId);
-    return coach;
-};
-
-
-export const updateCoachStatus = async (coachId, newStatus, rejectionReason = null) => {
-    await delay(300);
-    const coachIndex = coachesDB.findIndex(c => c.id === coachId);
-    if (coachIndex !== -1) {
-        coachesDB[coachIndex].status = newStatus;
-        if (rejectionReason) {
-            coachesDB[coachIndex].rejectionReason = rejectionReason;
+    console.log('Fetching detailed coach profile for ID:', coachId);
+    
+    try {
+        const response = await apiRequest(`/v1/admin/viewSingleCoachProfileInfo/${coachId}`);
+        console.log('viewSingleCoachProfileInfo API response:', response);
+        
+        // Based on API spec: result[0].profileDetails
+        if (response.result && Array.isArray(response.result) && response.result[0] && response.result[0].profileDetails) {
+            const profileDetails = response.result[0].profileDetails;
+            console.log('Extracted profile details:', profileDetails);
+            
+            const transformedCoach = transformSingleCoachData(profileDetails);
+            console.log('Transformed single coach:', transformedCoach);
+            return transformedCoach;
         }
-        return { success: true, updatedCoach: coachesDB[coachIndex] };
+    } catch (singleApiError) {
+        console.warn('Single coach profile API failed, trying fallback to coach list:', singleApiError.message);
     }
-    return { success: false, message: "Coach not found." };
+    
+    // Fallback: Get from coach list (which has basic info from getAllCoaches)
+    console.log('Using fallback: getting coach from list...');
+    const allCoaches = await fetchCoaches();
+    const coach = allCoaches.find(c => 
+        c.id === coachId || 
+        c.id === String(coachId) ||
+        c.id === parseInt(coachId)
+    );
+    
+    if (coach) {
+        console.log('Found coach in list:', coach);
+        return coach;
+    }
+    
+    throw new Error(`Coach with ID ${coachId} not found`);
 };
 
-export const loginUser = async (email, password) => {
-    await delay(600);
-    if (email === 'admin@example.com' && password === 'password123') {
-        return { success: true, user: { name: 'Admin User', email }, token: 'fake-jwt-token' };
+// 3. POST /v1/admin/verifyCoachProfile - For coach verification
+export const updateCoachStatus = async (coachId, newStatus, rejectionReason = null) => {
+    try {
+        console.log('Verifying coach:', coachId, 'Status:', newStatus, 'Reason:', rejectionReason);
+        
+        // Map status to API expected values
+        const verificationStatus = newStatus.toLowerCase() === 'approved' ? 'approved' : 'rejected';
+        
+        const requestBody = {
+            coachProfileID: coachId, // Note: API expects "coachProfileID" (capital letters)
+            verificationStatus: verificationStatus,
+            ...(rejectionReason && { rejectionReason: rejectionReason })
+        };
+        
+        console.log('Verification request body:', requestBody);
+        
+        const response = await apiRequest('/v1/admin/verifyCoachProfile', {
+            method: 'POST',
+            body: JSON.stringify(requestBody)
+        });
+        
+        console.log('Verification API response:', response);
+        
+        // Based on API spec: result[0] contains verification details
+        if (response.success) {
+            return { 
+                success: true, 
+                updatedCoach: {
+                    id: coachId,
+                    verificationStatus: verificationStatus,
+                    rejectionReason: rejectionReason
+                }
+            };
+        } else {
+            return { 
+                success: false, 
+                message: response.message || 'Verification failed' 
+            };
+        }
+        
+    } catch (error) {
+        console.error('Verification API call failed:', error.message);
+        return { 
+            success: false, 
+            message: error.message || 'Failed to update coach status' 
+        };
     }
-    return { success: false, message: 'Invalid credentials.' };
+};
+
+// 4. POST /v1/login - Admin login
+export const loginUser = async (email, password) => {
+    try {
+        console.log('Attempting login with email:', email);
+        
+        const requestBody = {
+            email: email,
+            password: password,
+            signinType: 'email' // As per API spec for email login
+        };
+        
+        const response = await apiRequest('/v1/login', {
+            method: 'POST',
+            body: JSON.stringify(requestBody)
+        });
+        
+        console.log('Login API response:', response);
+        
+        if (response.success && response.result && response.result[0]) {
+            const result = response.result[0];
+            
+            // Check if user has admin role or appropriate permissions
+            // Note: The API returns role as "learner/coach/both"
+            // You might need to check with your backend team about admin role
+            
+            // Store token in localStorage for future API calls
+            if (result.token) {
+                localStorage.setItem('adminToken', result.token);
+            }
+            
+            return { 
+                success: true, 
+                user: { 
+                    name: email.split('@')[0], // Extract name from email
+                    email: email,
+                    userId: result.userId,
+                    role: result.role
+                },
+                token: result.token
+            };
+        } else {
+            return { 
+                success: false, 
+                message: response.message || 'Invalid credentials.' 
+            };
+        }
+        
+    } catch (error) {
+        console.error('Login API failed:', error);
+        return { 
+            success: false, 
+            message: error.message || 'Login failed. Please check your credentials and try again.' 
+        };
+    }
 };
 

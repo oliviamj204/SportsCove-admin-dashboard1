@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/v1/:path*",
+      "destination": "https://sportscovetestapi.consultcraftinc.com/v1/:path*"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/v1/:path*",
+      "headers": [
+        { "key": "X-Proxy-By", "value": "Vercel-Rewrite" }
+      ]
+    }
+  ]
+}

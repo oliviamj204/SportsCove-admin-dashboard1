@@ -4,8 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import './Login.css';
 
 const Login = () => {
-  const [email, setEmail] = useState('admin@example.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 

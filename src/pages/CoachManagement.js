@@ -18,6 +18,7 @@ const CoachManagement = () => {
         try {
             setLoading(true);
             const data = await fetchCoaches();
+            console.log('Loaded coaches with statuses:', data.map(c => ({ name: c.name, status: c.status })));
             setCoaches(data);
         } catch (err) {
             setError('Failed to fetch coaches.');
@@ -33,10 +34,24 @@ const CoachManagement = () => {
 
     const handleVerify = async (coachId) => {
         try {
-            await updateCoachStatus(coachId, 'Approved');
-            loadCoaches(); // Refresh the list
+            console.log('Attempting to verify coach:', coachId);
+            const result = await updateCoachStatus(coachId, 'Approved');
+            
+            if (result.success) {
+                alert('Coach verified successfully!');
+                loadCoaches(); // Refresh the list
+            } else {
+                alert(`Verification failed: ${result.message || 'Unknown error'}`);
+            }
         } catch (err) {
             console.error("Failed to verify coach:", err);
+            // Check if it's an API not implemented error
+            if (err.message && err.message.includes('Cannot POST')) {
+                alert('Verification API not implemented yet. Using mock functionality for now.');
+                loadCoaches(); // Still refresh to show mock update
+            } else {
+                alert('Failed to verify coach. Please try again.');
+            }
         }
     };
 
@@ -52,13 +67,32 @@ const CoachManagement = () => {
     };
 
     const handleReject = async () => {
-        if (!currentCoach || !rejectionReason) return;
+        if (!currentCoach || !rejectionReason) {
+            alert('Please provide a rejection reason.');
+            return;
+        }
+        
         try {
-            await updateCoachStatus(currentCoach.id, 'Rejected', rejectionReason);
-            closeRejectionModal();
-            loadCoaches(); // Refresh the list
+            console.log('Attempting to reject coach:', currentCoach.id, 'Reason:', rejectionReason);
+            const result = await updateCoachStatus(currentCoach.id, 'Rejected', rejectionReason);
+            
+            if (result.success) {
+                alert('Coach rejected successfully!');
+                closeRejectionModal();
+                loadCoaches(); // Refresh the list
+            } else {
+                alert(`Rejection failed: ${result.message || 'Unknown error'}`);
+            }
         } catch (err) {
             console.error("Failed to reject coach:", err);
+            // Check if it's an API not implemented error
+            if (err.message && err.message.includes('Cannot POST')) {
+                alert('Rejection API not implemented yet. Using mock functionality for now.');
+                closeRejectionModal();
+                loadCoaches(); // Still refresh to show mock update
+            } else {
+                alert('Failed to reject coach. Please try again.');
+            }
         }
     };
 
@@ -93,7 +127,7 @@ const CoachManagement = () => {
             Cell: ({ row }) => (
                 <div className="actions-cell">
                     <Link to={`/coach/${row.original.id}`} className="action-button view">View Profile</Link>
-                    {row.original.status === 'Pending' && (
+                    {row.original.status && row.original.status.toLowerCase() === 'pending' && (
                         <>
                             <button onClick={() => handleVerify(row.original.id)} className="action-button verify">Verify</button>
                             <button onClick={() => openRejectionModal(row.original)} className="action-button reject">Reject</button>
