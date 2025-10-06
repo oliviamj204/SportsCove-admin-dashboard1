@@ -45,11 +45,11 @@ const Login = () => {
 
         <form onSubmit={handleSubmit}>
           <div className="input-group">
-            <label htmlFor="email">Username</label>
+            <label htmlFor="email">email</label>
             <input
               type="email"
               id="email"
-              value={email}
+              value={Username}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
