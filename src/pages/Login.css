@@ -9,15 +9,15 @@
     min-height: 100vh;
     background-color: #074048;
     font-family: 'Inter', sans-serif;
-    /* ADDED: Ensures some space from screen edges on mobile */
-    padding: 1rem;
+    padding: 1rem; /* Ensures spacing from screen edges on mobile */
 }
 
 .login-card {
     background: #cfffa5;
     padding: 2.5rem;
     border-radius: 0.75rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                0 4px 6px -2px rgba(0, 0, 0, 0.05);
     width: 100%;
     max-width: 400px;
     text-align: center;
@@ -72,6 +72,45 @@
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
 
+/* =================================================================== */
+/* PASSWORD FIELD TOGGLE */
+/* =================================================================== */
+
+.password-group {
+    position: relative;
+}
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 2.5rem; /* Space for the eye icon */
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 1.25rem;
+    line-height: 1;
+    color: #4b5563;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.toggle-password:hover {
+    opacity: 0.8;
+    transform: scale(1.1);
+}
+
+/* =================================================================== */
+/* LOGIN BUTTON */
+/* =================================================================== */
+
 .login-button {
     width: 100%;
     padding: 0.8rem;
@@ -94,24 +133,26 @@
     cursor: not-allowed;
 }
 
-
 /* =================================================================== */
 /* RESPONSIVE STYLES */
 /* =================================================================== */
 
-/* --- For Small Mobile Screens (e.g., screen width <= 480px) --- */
+/* --- For Small Mobile Screens (<= 480px) --- */
 @media (max-width: 480px) {
     .login-card {
-        /* Reduce padding to create more space inside the card */
         padding: 2rem;
     }
 
     .login-card h1 {
-        /* Slightly smaller heading */
         font-size: 1.625rem;
     }
 
     .login-card p {
         font-size: 0.9rem;
+    }
+
+    .toggle-password {
+        font-size: 1.1rem;
+        right: 8px;
     }
 }

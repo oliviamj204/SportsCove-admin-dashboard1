@@ -3,7 +3,7 @@
 /* =================================================================== */
 
 .stat-card {
-    background-color: #fff; /* Replaced CSS variable for clarity */
+    background-color: #042b30; /* Replaced CSS variable for clarity */
     border-radius: 0.5rem;
     padding: 1.5rem;
     border-left: 4px solid #3b82f6; /* Example color */
@@ -18,7 +18,7 @@
 .card-value {
     font-size: 2.25rem; /* 36px */
     font-weight: 700;
-    color: #111827; /* Replaced CSS variable */
+    color: #cfffa5; /* Replaced CSS variable */
     margin: 0;
 }
 
