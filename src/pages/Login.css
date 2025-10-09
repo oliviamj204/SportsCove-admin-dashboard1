@@ -1,3 +1,7 @@
+/* =================================================================== */
+/* BASE STYLES (DESKTOP & MOBILE) */
+/* =================================================================== */
+
 .login-container {
     display: flex;
     align-items: center;
@@ -5,6 +9,8 @@
     min-height: 100vh;
     background-color: #074048;
     font-family: 'Inter', sans-serif;
+    /* ADDED: Ensures some space from screen edges on mobile */
+    padding: 1rem;
 }
 
 .login-card {
@@ -86,4 +92,26 @@
 .login-button:disabled {
     background-color: #9ca3af;
     cursor: not-allowed;
+}
+
+
+/* =================================================================== */
+/* RESPONSIVE STYLES */
+/* =================================================================== */
+
+/* --- For Small Mobile Screens (e.g., screen width <= 480px) --- */
+@media (max-width: 480px) {
+    .login-card {
+        /* Reduce padding to create more space inside the card */
+        padding: 2rem;
+    }
+
+    .login-card h1 {
+        /* Slightly smaller heading */
+        font-size: 1.625rem;
+    }
+
+    .login-card p {
+        font-size: 0.9rem;
+    }
 }

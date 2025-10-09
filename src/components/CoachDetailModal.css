@@ -1,63 +1,72 @@
-/* src/components/CoachDetailModal.css */
+/* =================================================================== */
+/* BASE STYLES (DESKTOP) */
+/* =================================================================== */
+
 .modal-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 1rem; /* Added padding for smaller screens */
 }
 
 .modal-content {
-  background-color: var(--card-bg);
-  border-radius: 1rem;
-  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-  padding: 2rem;
-  max-width: 500px;
-  width: 90%;
-  border: 1px solid var(--border-color);
-  animation: fadeIn-up 0.3s ease-out;
+    background-color: #fff; /* Replaced CSS variable for clarity */
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    padding: 2rem;
+    max-width: 500px;
+    width: 100%; /* Changed from 90% to 100% to fill padded overlay */
+    border: 1px solid #e5e7eb; /* Replaced CSS variable */
+    animation: fadeIn-up 0.3s ease-out;
 }
 
 .modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #e5e7eb; /* Replaced CSS variable */
+    padding-bottom: 1rem;
 }
+
 .modal-header h2 {
-  font-size: 1.5rem;
-  color: var(--text-primary);
-  margin: 0;
+    font-size: 1.5rem;
+    color: #111827; /* Replaced CSS variable */
+    margin: 0;
 }
 
 .close-button {
-  background: none;
-  border: none;
-  font-size: 2rem;
-  color: var(--text-secondary);
-  cursor: pointer;
-  line-height: 1;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #6b7280; /* Replaced CSS variable */
+    cursor: pointer;
+    line-height: 1;
 }
 
 .modal-body {
-  color: var(--text-secondary);
+    color: #4b5563; /* Replaced CSS variable */
 }
+
 .modal-body p {
-  margin: 0 0 1rem 0;
+    margin: 0 0 1rem 0;
 }
+
 .modal-body strong {
-  color: var(--text-primary);
+    color: #1f2937; /* Replaced CSS variable */
 }
+
 .modal-body a {
-  color: var(--primary);
-  text-decoration: none;
+    color: #3b82f6; /* Replaced CSS variable */
+    text-decoration: none;
 }
+
 .modal-body a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .modal-status {
@@ -70,7 +79,7 @@
 .bio-title {
     margin-top: 1.5rem;
     padding-top: 1.5rem;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid #e5e7eb; /* Replaced CSS variable */
 }
 
 .bio-text {
@@ -85,5 +94,35 @@
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+
+/* =================================================================== */
+/* RESPONSIVE STYLES */
+/* =================================================================== */
+
+/* --- For Mobile Devices (e.g., screen width <= 768px) --- */
+@media (max-width: 768px) {
+    .modal-content {
+        /* Reduce padding for a more compact look */
+        padding: 1.5rem;
+        /* Allow vertical scrolling if content overflows */
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modal-header {
+        padding-bottom: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .modal-header h2 {
+        /* Decrease the font size of the title */
+        font-size: 1.25rem;
+    }
+
+    .modal-body p {
+        font-size: 0.9rem; /* Slightly smaller text for better fit */
     }
 }

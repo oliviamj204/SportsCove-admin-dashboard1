@@ -1,9 +1,12 @@
-/* src/components/Card.css */
+/* =================================================================== */
+/* BASE STYLES (DESKTOP) */
+/* =================================================================== */
+
 .stat-card {
-    background-color: var(--card-bg);
+    background-color: #fff; /* Replaced CSS variable for clarity */
     border-radius: 0.5rem;
     padding: 1.5rem;
-    border-left: 4px solid;
+    border-left: 4px solid #3b82f6; /* Example color */
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -13,8 +16,26 @@
 }
 
 .card-value {
-    font-size: 2.25rem;
+    font-size: 2.25rem; /* 36px */
     font-weight: 700;
-    color: var(--text-primary);
+    color: #111827; /* Replaced CSS variable */
     margin: 0;
+}
+
+
+/* =================================================================== */
+/* RESPONSIVE STYLES */
+/* =================================================================== */
+
+/* --- For Mobile Devices (e.g., screen width <= 768px) --- */
+@media (max-width: 768px) {
+    .stat-card {
+        /* Reduce padding on smaller screens */
+        padding: 1rem;
+    }
+
+    .card-value {
+        /* Decrease the font size to prevent it from being too large */
+        font-size: 1.75rem; /* 28px */
+    }
 }

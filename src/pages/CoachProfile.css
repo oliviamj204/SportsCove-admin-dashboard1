@@ -1,3 +1,7 @@
+/* =================================================================== */
+/* BASE STYLES (DESKTOP) */
+/* =================================================================== */
+
 .coach-profile-container {
     padding: 2rem;
     background-color: #074048;
@@ -103,7 +107,7 @@
     margin: 0;
 }
 
-/* --- Media Gallery (unchanged but placed here for context) --- */
+/* --- Media Gallery --- */
 .media-gallery {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -144,10 +148,6 @@
 }
 
 /* Certificate and File Links */
-.certificate-file, .file-link {
-    margin-top: 1rem;
-}
-
 .file-link {
     display: inline-block;
     background-color: #3b82f6;
@@ -157,17 +157,11 @@
     text-decoration: none;
     font-weight: 600;
     transition: background-color 0.2s;
+    margin-top: 1rem;
 }
 
 .file-link:hover {
     background-color: #2563eb;
-}
-
-/* Video Container */
-.video-container {
-    margin-top: 1rem;
-    display: flex;
-    justify-content: center;
 }
 
 /* Achievements Media */
@@ -197,8 +191,8 @@
 
 .social-link-item strong {
     color: #374151;
-    display: inline-block;
-    min-width: 100px;
+    display: block; /* Stack on mobile */
+    margin-bottom: 0.25rem;
 }
 
 .social-link {
@@ -212,13 +206,77 @@
     text-decoration: underline;
 }
 
-/* Certificate Details */
-.certificate-details {
-    margin-top: 1rem;
-    padding: 1rem;
-    background-color: #f9fafb;
-    border-radius: 0.5rem;
-    border: 1px solid #e5e7eb;
+/* =================================================================== */
+/* RESPONSIVE STYLES */
+/* =================================================================== */
+
+/* --- For Tablets and Smaller Devices (e.g., screen width <= 768px) --- */
+@media (max-width: 768px) {
+    .coach-profile-container {
+        padding: 1.5rem;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+
+    .profile-info h1 {
+        font-size: 1.75rem;
+    }
+
+    .profile-email {
+        font-size: 1rem;
+    }
+
+    .back-button {
+        width: 100%;
+        text-align: center;
+    }
+
+    .profile-card {
+        padding: 1.5rem;
+    }
+
+    .profile-card h2 {
+        font-size: 1.25rem;
+    }
+
+    /* Change 2-column grid to 1 column */
+    .details-grid-expanded {
+        grid-template-columns: 1fr;
+    }
 }
 
 
+/* --- For Mobile Phones (e.g., screen width <= 480px) --- */
+@media (max-width: 480px) {
+    .coach-profile-container {
+        padding: 1rem;
+    }
+
+    .profile-info h1 {
+        font-size: 1.5rem;
+    }
+    
+    .profile-section h3 {
+        font-size: 1rem;
+    }
+
+    .file-link {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box; /* Ensures padding is included in width */
+    }
+
+    .social-link-item {
+        text-align: center;
+    }
+
+    .social-link-item strong {
+        min-width: unset;
+    }
+}
